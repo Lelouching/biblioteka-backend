@@ -6,5 +6,5 @@ class User(AbstractUser):
     name = models.CharField(max_length=50)
     email = models.EmailField(max_length=120, unique=True)
     student = models.BooleanField(default=True)
-    blocked = models.BooleanField(null=True, default=False)
-    super_user = models.BooleanField(null=True, default=False)
+    blocked = models.BooleanField(default=False)
+    super_user = models.BooleanField(default=False)
