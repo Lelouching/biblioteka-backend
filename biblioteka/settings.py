@@ -51,7 +51,8 @@ THIRD_PARTY_APPS = [
 
 MY_APPS = [
     "users",
-    "books"
+    "books",
+    "copies"
     # Vocês irão colocar aqui os apps que forem criando, ex: 'users'
 ]
 
