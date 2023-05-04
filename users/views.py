@@ -1,7 +1,6 @@
 from rest_framework import generics, permissions
 from .models import User
 from .serializers import UserSerializer
-# import ipdb
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 

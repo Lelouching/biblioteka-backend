@@ -7,3 +7,4 @@ class User(AbstractUser):
     email = models.EmailField(max_length=120, unique=True)
     student = models.BooleanField(default=True)
     blocked = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
