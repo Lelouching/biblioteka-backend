@@ -4,7 +4,14 @@ from .models import User
 
 class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data: dict) -> User:
-        return User.objects.create_superuser(**validated_data)
+        is_superuser = validated_data.pop("is_superuser", False)
+
+        if is_superuser:
+            user = User.objects.create_superuser(**validated_data, student=False)
+        else:
+            user = User.objects.create_user(**validated_data)
+
+        return user
 
     def update(self, instance: User, validated_data: dict) -> User:
         for key, value in validated_data.items():
