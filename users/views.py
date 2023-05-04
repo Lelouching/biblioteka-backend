@@ -22,6 +22,11 @@ class UserCreateAPIView(generics.CreateAPIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
+    # def perform_create(self, serializer):
+    #     student = self.request.data.get("student", True)
+    #     is_superuser = not student
+    #     serializer.save(is_superuser=is_superuser)
+
 
 class UserUpdateAPIView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer
