@@ -28,13 +28,13 @@ class LoanBookView(generics.CreateAPIView):
             user.date_blocked = None
             user.blocked = False
             user.save()
-        
+
         if user.blocked is True:
             return Response({"error": "user is blocked"}, 403)
 
         loans = Loan.objects.all().filter(user=user)
         loans = LoanBookSerializer(loans, many=True)
-        
+
         for loan in loans.data:
             if loan["date_devolution"] < datetime.now().strftime("%Y-%m-%d"):
                 user.blocked = True
@@ -46,7 +46,7 @@ class LoanBookView(generics.CreateAPIView):
         already_have_copy = Loan.objects.filter(copy_id=copy_id, user=user)
 
         if already_have_copy:
-            return Response({"error": "the user already have this copy"}, 403)
+            return Response({"error": "the user already have this copy"}, 409)
 
         copy = get_object_or_404(Copies, pk=copy_id)
 
@@ -66,7 +66,7 @@ class LoanBookView(generics.CreateAPIView):
 
         copy.amount_copy = copy.amount_copy - 1
         copy.save()
-        
+
         return Response(LoanBookSerializer(loan).data, 201)
 
 
