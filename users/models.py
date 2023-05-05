@@ -9,5 +9,6 @@ class User(AbstractUser):
     email = models.EmailField(max_length=120, unique=True)
     student = models.BooleanField(default=True)
     blocked = models.BooleanField(default=False)
+    date_blocked = models.DateField(null=True, default=None)
     is_superuser = models.BooleanField(default=False)
     
