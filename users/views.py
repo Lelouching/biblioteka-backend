@@ -2,6 +2,8 @@ from rest_framework import generics, permissions
 from .models import User
 from .serializers import UserSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from loans.models import Loan
+from loans.serializers import LoanBookSerializer
 
 
 class UserListAPIView(generics.ListAPIView):
@@ -53,3 +55,13 @@ class UserDeleteAPIView(generics.DestroyAPIView):
             raise permissions.PermissionDenied(
                 "You do not have permission to delete this user."
             )
+
+
+class LoanListAPIView(generics.ListAPIView):
+    serializer_class = LoanBookSerializer
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+    authentication_classes = [JWTAuthentication]
+
+    def get_queryset(self):
+        user_id = self.kwargs["user_id"]
+        return Loan.objects.filter(user_id=user_id)
