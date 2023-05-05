@@ -2,27 +2,56 @@ from rest_framework import generics
 from .models import Loan
 from users.models import User
 from copies.models import Copies
-from .serializers import LoanSerializer
+from .serializers import LoanBookSerializer, ReturnBookSerializer
 from books.permissions import MyCustomPermission
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.shortcuts import get_object_or_404
 from datetime import datetime, timedelta
+from rest_framework.request import Request
+from rest_framework.response import Response
 
 
 class LoanBookView(generics.CreateAPIView):
     queryset = Loan.objects.all()
-    serializer_class = LoanSerializer
-    lookup_url_kwarg = "user_id"
+    serializer_class = LoanBookSerializer
 
     authentication_classes = [JWTAuthentication]
     permission_classes = [MyCustomPermission]
 
-    def perform_create(self, serializer):
-        user_id = self.kwargs['user_id']
+    def post(self, request: Request, user_id: int):
+        serializer = LoanBookSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         user = get_object_or_404(User, pk=user_id)
 
-        copy_id = self.request.data["copy_id"]
+        if user.date_blocked is not None and user.date_blocked < datetime.now().date():
+            user.date_blocked = None
+            user.blocked = False
+            user.save()
+        
+        if user.blocked is True:
+            return Response({"error": "user is blocked"}, 403)
+
+        loans = Loan.objects.all().filter(user=user)
+        loans = LoanBookSerializer(loans, many=True)
+        
+        for loan in loans.data:
+            if loan["date_devolution"] < datetime.now().strftime("%Y-%m-%d"):
+                user.blocked = True
+                user.save()
+                return Response({"error": "user is blocked"}, 403)
+
+        copy_id = serializer.validated_data["copy_id"]
+
+        already_have_copy = Loan.objects.filter(copy_id=copy_id, user=user)
+
+        if already_have_copy:
+            return Response({"error": "the user already have this copy"}, 403)
+
         copy = get_object_or_404(Copies, pk=copy_id)
+
+        if copy.amount_copy == 0:
+            return Response({"error": "copies out of stock"}, 403)
 
         date_increase = datetime.now() + timedelta(days=7)
 
@@ -33,18 +62,51 @@ class LoanBookView(generics.CreateAPIView):
 
         date_devolution = date_increase.strftime("%Y-%m-%d")
 
-        serializer.save(user=user, copy=copy, date_devolution=date_devolution)
+        loan = Loan.objects.create(date_devolution=date_devolution, user=user, copy=copy)
+
+        copy.amount_copy = copy.amount_copy - 1
+        copy.save()
+        
+        return Response(LoanBookSerializer(loan).data, 201)
 
 
 class ReturnBookView(generics.CreateAPIView):
     queryset = Loan.objects.all()
-    serializer_class = LoanSerializer
-    lookup_url_kwarg = "user_id"
+    serializer_class = ReturnBookSerializer
 
     authentication_classes = [JWTAuthentication]
     permission_classes = [MyCustomPermission]
 
-    def perform_create(self, serializer):
-        user_id = self.kwargs['user_id']
+    def post(self, request: Request, user_id: int):
+        serializer = ReturnBookSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
         user = get_object_or_404(User, pk=user_id)
-        serializer.save()
+
+        loan_id = serializer.validated_data["loan_id"]
+        loan = get_object_or_404(Loan, pk=loan_id, user=user)
+
+        loan.delete()
+
+        if loan.date_devolution < datetime.now().date():
+            user.blocked = True
+            loans = Loan.objects.filter(user=user)
+
+            need_return_other_book = False
+
+            for user_loan in loans:
+                if user_loan.date_devolution < datetime.now().date():
+                    need_return_other_book = True
+                    break
+
+            if need_return_other_book is False:
+                date_blocked = datetime.now() + timedelta(days=5)
+                user.date_blocked = date_blocked.strftime("%Y-%m-%d")
+
+            user.save()
+
+        copy = get_object_or_404(Copies, id=loan.copy.id)
+        copy.amount_copy = copy.amount_copy + 1
+        copy.save()
+
+        return Response({"message": "book returned with success"}, 200)

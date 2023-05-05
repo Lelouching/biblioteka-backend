@@ -3,7 +3,7 @@ from .models import Loan
 from users.serializers import UserSerializer
 
 
-class LoanSerializer(serializers.ModelSerializer):
+class LoanBookSerializer(serializers.ModelSerializer):
     copy_id = serializers.IntegerField(write_only=True)
     user = UserSerializer(read_only=True)
 
@@ -20,6 +20,9 @@ class LoanSerializer(serializers.ModelSerializer):
             "copy": {"read_only": True},
         }
 
-
     def create(self, validated_data: dict):
         return Loan.objects.create(**validated_data)
+
+
+class ReturnBookSerializer(serializers.Serializer):
+    loan_id = serializers.IntegerField(write_only=True)
