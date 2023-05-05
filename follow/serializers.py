@@ -4,7 +4,7 @@ from .models import Follow
 from users.serializers import UserSerializer
 
 class FollowSerializer(serializers.ModelSerializer):
-    book_id = serializers.IntegerField(write_only = True)
+ 
     user = UserSerializer(read_only = True)
     class Meta:
         model = Follow

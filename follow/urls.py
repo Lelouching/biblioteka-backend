@@ -4,5 +4,5 @@ from . import views
 
 
 urlpatterns = [
-    path("users/<int:user_id>/follow/", views.FollowBookView.as_view()),
+    path("book/<int:book_id>/follow/", views.FollowBookView.as_view()),
 ]
