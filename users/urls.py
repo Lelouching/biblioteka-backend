@@ -16,5 +16,5 @@ urlpatterns = [
     path("users/<int:pk>/update/", UserUpdateAPIView.as_view(), name="user_update"),
     path("users/<int:pk>/delete/", UserDeleteAPIView.as_view(), name="user_delete"),
     path("users/login/", jwt_views.TokenObtainPairView.as_view()),
-    path("loans/<int:user_id>/", LoanListAPIView.as_view(), name="loan_list"),
+    path("users/<int:user_id>/loans", LoanListAPIView.as_view(), name="loan_list"),
 ]
