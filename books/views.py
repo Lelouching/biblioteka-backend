@@ -17,7 +17,7 @@ class BookView(generics.ListCreateAPIView):
         new_book = Book.objects.filter(title__iexact=request.data.get("title")).first()
 
         if new_book:
-            return Response({"msg": "This book already exist."})
+            return Response({"msg": "This book already exist!"})
 
         else:
             return super().post(request, *args, **kwargs)

@@ -52,8 +52,9 @@ THIRD_PARTY_APPS = [
 MY_APPS = [
     "users",
     "books",
-    "copies"
-    # Vocês irão colocar aqui os apps que forem criando, ex: 'users'
+    "copies",
+    "loans",
+    "follow",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + MY_APPS
