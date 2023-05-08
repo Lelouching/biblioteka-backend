@@ -12,5 +12,11 @@ class BookSerializer(serializers.ModelSerializer):
         model = Book
         fields = ["id", "title", "author", "category", "year"]
         extra_kwargs = {
-            "title": {"validators": [UniqueValidator(queryset=Book.objects.all())]}
+            "title": {
+                "validators": [
+                    UniqueValidator(
+                        queryset=Book.objects.all(), message="This book already exist."
+                    )
+                ]
+            }
         }
