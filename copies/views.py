@@ -1,9 +1,12 @@
-from rest_framework import generics
-from copies.models import Copies
-from books.permissions import MyCustomPermission, MyCustomPermissionDetail
-from copies.serializers import CopiesSerializer
+
+from rest_framework import generics, status
+from rest_framework.exceptions import NotFound
+from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from books.models import Book
+from copies.models import Copies
+from copies.serializers import CopiesSerializer
+from books.permissions import MyCustomPermission, MyCustomPermissionDetail
 
 
 class CopiesView(generics.ListCreateAPIView):
@@ -13,11 +16,19 @@ class CopiesView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         book_id = self.kwargs['book_id']
-        return Copies.objects.filter(book_id=book_id)
+        try:
+            book = Book.objects.get(id=book_id)
+        except Book.DoesNotExist:
+            raise NotFound("This book does not exist!")
+        return Copies.objects.filter(book=book)
 
     def perform_create(self, serializer):
         book_id = self.kwargs['book_id']
-        serializer.save(book_id=book_id)
+        try:
+            book = Book.objects.get(id=book_id)
+        except Book.DoesNotExist:
+            raise NotFound("This book does not exist!")
+        serializer.save(book=book)
 
 
 class CopiesDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -25,3 +36,4 @@ class CopiesDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [MyCustomPermissionDetail]
     serializer_class = CopiesSerializer
     queryset = Copies.objects.all()
+
