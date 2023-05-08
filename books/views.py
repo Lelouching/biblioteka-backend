@@ -13,15 +13,6 @@ class BookView(generics.ListCreateAPIView):
     serializer_class = BookSerializer
     queryset = Book.objects.all()
 
-    def post(self, request, *args, **kwargs):
-        new_book = Book.objects.filter(title__iexact=request.data.get("title")).first()
-
-        if new_book:
-            return Response({"msg": "This book already exist!"})
-
-        else:
-            return super().post(request, *args, **kwargs)
-
 
 class BookDetailView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [JWTAuthentication]
