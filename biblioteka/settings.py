@@ -47,6 +47,7 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     "rest_framework",
+    "drf_spectacular"
 ]
 
 MY_APPS = [
@@ -151,4 +152,18 @@ SIMPLE_JWT = {
     "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
 }
+
+REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "BiblioteKA",
+    "DESCRIPTION": "api made for managing a virtual library",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False, 
+}
+
 AUTH_USER_MODEL = "users.User"
+
+
