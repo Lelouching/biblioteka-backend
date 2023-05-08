@@ -7,7 +7,7 @@ from books.models import Book
 from copies.models import Copies
 from copies.serializers import CopiesSerializer
 from books.permissions import MyCustomPermission, MyCustomPermissionDetail
-
+from django.shortcuts import get_object_or_404
 
 class CopiesView(generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
@@ -16,9 +16,8 @@ class CopiesView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         book_id = self.kwargs['book_id']
-        try:
-            book = Book.objects.get(id=book_id)
-        except Book.DoesNotExist:
+        book = get_object_or_404(Book,id=book_id)
+        if book == None:
             raise NotFound("This book does not exist!")
         return Copies.objects.filter(book=book)
 
