@@ -10,11 +10,11 @@ class BookSerializer(serializers.ModelSerializer):
         model = Book
         fields = ["id", "title", "author", "category", "year"]
 
-    def create(self, validated_data):
-        new_book = Book.objects.filter(title__iexact=validated_data["title"]).first()
+    # def create(self, validated_data):
+    #     new_book = Book.objects.filter(title__iexact=validated_data["title"]).first()
 
-        if new_book:
-            raise NameError("This book already exist.")
+    #     if new_book:
+    #         return Response({"msg": "This book already exist."})
 
-        else:
-            return Book.objects.create(**validated_data)
+    #     else:
+    #         return Book.objects.create(**validated_data)
