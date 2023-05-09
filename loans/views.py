@@ -11,7 +11,6 @@ from datetime import datetime, timedelta
 from rest_framework.request import Request
 from rest_framework.response import Response
 from django.core.mail import send_mail
-from django.conf import settings
 import os
 import dotenv
 
