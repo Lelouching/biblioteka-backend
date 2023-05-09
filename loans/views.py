@@ -12,6 +12,8 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from django.core.mail import send_mail
 from django.conf import settings
+import os
+import dotenv
 
 
 class LoanBookView(generics.CreateAPIView):
@@ -123,7 +125,7 @@ class ReturnBookView(generics.CreateAPIView):
             send_mail(
                 subject="The book you are following is now available",
                 message=f"a book's copy {copy.book.title} is available to be loaned",
-                from_email=settings.EMAIL_HOST_USER,
+                from_email=os.getenv("EMAIL_HOST_USER"),
                 recipient_list=emails,
             )
 
