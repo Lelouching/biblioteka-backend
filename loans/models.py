@@ -7,10 +7,10 @@ class Loan(models.Model):
     copy = models.ForeignKey(
         "copies.Copies",
         on_delete=models.CASCADE,
-        related_name="copy",
+        related_name="loans",
     )
     user = models.ForeignKey(
         "users.User",
         on_delete=models.CASCADE,
-        related_name="user",
+        related_name="loans",
     )
