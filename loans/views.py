@@ -2,6 +2,7 @@ from rest_framework import generics
 from .models import Loan
 from users.models import User
 from copies.models import Copies
+from follow.models import Follow
 from .serializers import LoanBookSerializer, ReturnBookSerializer
 from books.permissions import MyCustomPermission
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -9,6 +10,8 @@ from django.shortcuts import get_object_or_404
 from datetime import datetime, timedelta
 from rest_framework.request import Request
 from rest_framework.response import Response
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 class LoanBookView(generics.CreateAPIView):
@@ -80,7 +83,7 @@ class ReturnBookView(generics.CreateAPIView):
     def post(self, request: Request, user_id: int):
         serializer = ReturnBookSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
+
         user = get_object_or_404(User, pk=user_id)
 
         loan_id = serializer.validated_data["loan_id"]
@@ -108,5 +111,20 @@ class ReturnBookView(generics.CreateAPIView):
         copy = get_object_or_404(Copies, id=loan.copy.id)
         copy.amount_copy = copy.amount_copy + 1
         copy.save()
+
+        follow = Follow.objects.filter(book=copy.book)
+
+        emails = []
+
+        for following in follow:
+            emails.append(following.user.email)
+
+        if len(emails) > 0:
+            send_mail(
+                subject="The book you are following is now available",
+                message=f"a book's copy {copy.book.title} is available to be loaned",
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=emails,
+            )
 
         return Response({"message": "book returned with success"}, 200)
