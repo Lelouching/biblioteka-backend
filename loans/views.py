@@ -127,4 +127,4 @@ class ReturnBookView(generics.CreateAPIView):
                 recipient_list=emails,
             )
 
-        return Response({"message": "book returned with success"}, 200)
+        return Response({"message": f"book {copy.book.title} returned with success"}, 200)
