@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404
 from datetime import datetime, timedelta
 from rest_framework.request import Request
 from rest_framework.response import Response
+from follow.models import Follow
 
 
 class LoanBookView(generics.CreateAPIView):
