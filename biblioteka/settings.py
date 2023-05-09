@@ -109,11 +109,7 @@ DATABASES = {
         "NAME": os.getenv("POSTGRES_DB_NAME"),
         "HOST": os.getenv("POSTGRES_DB_HOST"),
         "PORT": os.getenv("POSTGRES_DB_PORT"),
-    },
-    "bibliotekaLocal": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    },
+    }
 }
 
 DATABASE_URL = os.getenv("DATABASE_URL")
